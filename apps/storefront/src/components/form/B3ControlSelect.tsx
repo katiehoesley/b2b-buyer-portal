@@ -1,21 +1,11 @@
-import { ChangeEvent } from 'react'
-import { Controller } from 'react-hook-form'
-import { useB3Lang } from '@b3/lang'
-import {
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
-} from '@mui/material'
+import { ChangeEvent } from 'react';
+import { Controller } from 'react-hook-form';
+import { useB3Lang } from '@b3/lang';
+import { FormControl, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
 
-import Form from './ui'
+import Form from './ui';
 
-export default function B3ControlSelect({
-  control,
-  errors,
-  ...rest
-}: Form.B3UIProps) {
+export default function B3ControlSelect({ control, errors, ...rest }: Form.B3UIProps) {
   const {
     fieldType,
     name,
@@ -31,16 +21,15 @@ export default function B3ControlSelect({
     size = 'small',
     disabled = false,
     extraPadding,
-  } = rest
+  } = rest;
 
-  const b3Lang = useB3Lang()
+  const b3Lang = useB3Lang();
 
-  const muiAttributeProps = muiSelectProps || {}
+  const muiAttributeProps = muiSelectProps || {};
 
   const fieldsProps = {
     type: fieldType,
     name,
-    key: name,
     defaultValue,
     rules: {
       required:
@@ -51,36 +40,32 @@ export default function B3ControlSelect({
       validate: validate && ((v: string) => validate(v, b3Lang)),
     },
     control,
-  }
+  };
 
   const onHandleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    onChange()
-    setValue(name, e.target.value)
-  }
+    onChange();
+    setValue(name, e.target.value);
+  };
 
   const onChangeProps = onChange
     ? {
         onChange: onHandleChange,
       }
-    : {}
+    : {};
 
   return ['dropdown'].includes(fieldType) ? (
     <FormControl
       variant="filled"
       style={{
         width: '100%',
-        color: muiSelectProps?.disabled
-          ? 'rgba(0, 0, 0, 0.38)'
-          : 'rgba(0, 0, 0, 0.6)',
+        color: muiSelectProps?.disabled ? 'rgba(0, 0, 0, 0.38)' : 'rgba(0, 0, 0, 0.6)',
       }}
       disabled={disabled}
     >
       {label && (
         <InputLabel
           sx={{
-            color: muiSelectProps?.disabled
-              ? 'rgba(0, 0, 0, 0.38)'
-              : 'rgba(0, 0, 0, 0.6)',
+            color: muiSelectProps?.disabled ? 'rgba(0, 0, 0, 0.38)' : 'rgba(0, 0, 0, 0.6)',
           }}
           error={!!errors[name]}
           required={required}
@@ -89,6 +74,7 @@ export default function B3ControlSelect({
         </InputLabel>
       )}
       <Controller
+        key={fieldsProps.name}
         {...fieldsProps}
         render={({ field }) => (
           <Select
@@ -119,5 +105,5 @@ export default function B3ControlSelect({
         </FormHelperText>
       )}
     </FormControl>
-  ) : null
+  ) : null;
 }

@@ -1,14 +1,45 @@
-import { Alert, AlertTitle, Box, Snackbar } from '@mui/material'
+import { Alert, AlertTitle, Box, Snackbar } from '@mui/material';
 
-import useMobile from '@/hooks/useMobile'
-import {
-  MsgsProps,
-  TipMessagesProps,
-} from '@/shared/dynamicallyVariable/context/config'
+import useMobile from '@/hooks/useMobile';
+import { MsgsProps, TipMessagesProps } from '@/shared/dynamicallyVariable/context/config';
 
 interface B3TipProps extends TipMessagesProps {
-  handleItemClose: (id: number | string) => void
-  handleAllClose: (id: string | number, reason: string) => void
+  handleItemClose: (id: number | string) => void;
+  handleAllClose: (id: string | number, reason: string) => void;
+}
+
+function MessageAlert({
+  msg,
+  onClose,
+}: {
+  msg: MsgsProps;
+  onClose: (id: string | number) => void;
+}) {
+  const Body = msg.jsx ? msg.jsx : () => <span>{msg.msg}</span>;
+
+  return (
+    <Alert
+      sx={{
+        width: '320px',
+        alignItems: 'center',
+        '& button[title="Close"]': {
+          display: `${msg.isClose ? 'block' : 'none'}`,
+        },
+        mb: '5px',
+
+        '& .MuiAlert-message': {
+          overflow: 'unset',
+        },
+      }}
+      variant="filled"
+      key={msg.id}
+      severity={msg.type}
+      onClose={() => msg.isClose && onClose(msg.id)}
+    >
+      {msg.title && <AlertTitle>{msg.title}</AlertTitle>}
+      <Body />
+    </Alert>
+  );
 }
 
 export default function B3Tip({
@@ -18,8 +49,8 @@ export default function B3Tip({
   msgs = [],
   handleAllClose,
 }: B3TipProps) {
-  const [isMobile] = useMobile()
-  if (!msgs || !msgs.length) return null
+  const [isMobile] = useMobile();
+  if (!msgs || !msgs.length) return null;
   return (
     <Box>
       {msgs.length > 0
@@ -28,16 +59,14 @@ export default function B3Tip({
               key={msg.id}
               open={!!msg?.id}
               autoHideDuration={msg?.time || 5000}
-              onClose={(e, reason: string) => handleAllClose(msg.id, reason)}
+              onClose={(_, reason: string) => handleAllClose(msg.id, reason)}
               disableWindowBlurListener
               anchorOrigin={{
                 vertical,
                 horizontal,
               }}
               sx={{
-                top: `${
-                  24 + index * 10 + index * (isMobile ? 80 : 90)
-                }px !important`,
+                top: `${24 + index * 10 + index * (isMobile ? 80 : 90)}px !important`,
                 width: '320px',
                 height: 'auto',
               }}
@@ -47,31 +76,11 @@ export default function B3Tip({
                   display: 'flex',
                 }}
               >
-                <Alert
-                  sx={{
-                    width: '320px',
-                    alignItems: 'center',
-                    '& button[title="Close"]': {
-                      display: `${msg.isClose ? 'block' : 'none'}`,
-                    },
-                    mb: '5px',
-
-                    '& .MuiAlert-message': {
-                      overflow: 'unset',
-                    },
-                  }}
-                  variant="filled"
-                  key={msg.id}
-                  severity={msg.type}
-                  onClose={() => msg.isClose && handleItemClose(msg.id)}
-                >
-                  {msg?.title && <AlertTitle>{msg.title}</AlertTitle>}
-                  {msg.jsx ? msg.jsx() : msg.msg}
-                </Alert>
+                <MessageAlert msg={msg} onClose={handleItemClose} />
               </Box>
             </Snackbar>
           ))
         : null}
     </Box>
-  )
+  );
 }

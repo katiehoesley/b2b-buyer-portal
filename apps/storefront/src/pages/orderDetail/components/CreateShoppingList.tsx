@@ -1,14 +1,13 @@
-import { lazy, useContext, useRef, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { LangFormatFunction, useB3Lang } from '@b3/lang'
-import { Box } from '@mui/material'
+import { lazy, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { LangFormatFunction, useB3Lang } from '@b3/lang';
+import { Box } from '@mui/material';
 
-import { GlobaledContext } from '@/shared/global'
-import { isB2BUserSelector, useAppSelector } from '@/store'
-import createShoppingList from '@/utils/b3ShoppingList/b3ShoppingList'
+import { isB2BUserSelector, useAppSelector } from '@/store';
+import createShoppingList from '@/utils/b3ShoppingList/b3ShoppingList';
 
-const B3Dialog = lazy(() => import('../../../components/B3Dialog'))
-const B3CustomForm = lazy(() => import('../../../components/B3CustomForm'))
+const B3Dialog = lazy(() => import('../../../components/B3Dialog'));
+const B3CustomForm = lazy(() => import('../../../components/B3CustomForm'));
 const getList = (b3Lang: LangFormatFunction) => [
   {
     name: 'name',
@@ -33,31 +32,23 @@ const getList = (b3Lang: LangFormatFunction) => [
     rows: 4,
     maxLength: 200,
   },
-]
+];
 
 interface CreateShoppingListProps {
-  open: boolean
-  onChange: () => void
-  onClose: () => void
+  open: boolean;
+  onChange: () => void;
+  onClose: () => void;
 }
 
-function CreateShoppingList({
-  open,
-  onChange,
-  onClose,
-}: CreateShoppingListProps) {
-  const container = useRef<HTMLInputElement | null>(null)
+function CreateShoppingList({ open, onChange, onClose }: CreateShoppingListProps) {
+  const container = useRef<HTMLInputElement | null>(null);
 
-  const b3Lang = useB3Lang()
+  const b3Lang = useB3Lang();
 
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const {
-    state: { currentChannelId },
-  } = useContext(GlobaledContext)
-
-  const isB2BUser = useAppSelector(isB2BUserSelector)
-  const role = useAppSelector(({ company }) => company.customer.role)
+  const isB2BUser = useAppSelector(isB2BUserSelector);
+  const role = useAppSelector(({ company }) => company.customer.role);
 
   const {
     control,
@@ -67,27 +58,26 @@ function CreateShoppingList({
     setValue,
   } = useForm({
     mode: 'onSubmit',
-  })
+  });
 
   const handleClose = () => {
-    onClose()
-  }
+    onClose();
+  };
 
   const handleConfirm = () => {
     handleSubmit(async (data) => {
-      const { name, description } = data
+      const { name, description } = data;
 
-      setLoading(true)
+      setLoading(true);
       await createShoppingList({
         data: { name, description },
         isB2BUser,
         role: +role,
-        currentChannelId,
-      })
-      setLoading(false)
-      onChange()
-    })()
-  }
+      });
+      setLoading(false);
+      onChange();
+    })();
+  };
 
   return (
     <Box
@@ -124,7 +114,7 @@ function CreateShoppingList({
         </Box>
       </B3Dialog>
     </Box>
-  )
+  );
 }
 
-export default CreateShoppingList
+export default CreateShoppingList;

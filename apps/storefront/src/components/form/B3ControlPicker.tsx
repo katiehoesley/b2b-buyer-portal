@@ -1,23 +1,20 @@
-// import {
-//   useState,
-// } from 'react'
-import { Controller } from 'react-hook-form'
-import { useB3Lang } from '@b3/lang'
-import { TextField } from '@mui/material'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import dayjs from 'dayjs'
+import { useContext } from 'react';
+import { Controller } from 'react-hook-form';
+import { useB3Lang } from '@b3/lang';
+import { TextField } from '@mui/material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import dayjs from 'dayjs';
 
-import { PickerFormControl } from './styled'
-import Form from './ui'
+import { GlobaledContext } from '@/shared/global';
 
-export default function B3ControlPicker({
-  control,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  errors,
-  ...rest
-}: Form.B3UIProps) {
+import setDayjsLocale from '../ui/setDayjsLocale';
+
+import { PickerFormControl } from './styled';
+import Form from './ui';
+
+export default function B3ControlPicker({ control, errors, ...rest }: Form.B3UIProps) {
   const {
     fieldType,
     name,
@@ -29,16 +26,20 @@ export default function B3ControlPicker({
     setValue,
     variant,
     getValues,
-  } = rest
+  } = rest;
 
-  const b3Lang = useB3Lang()
+  const {
+    state: { bcLanguage },
+  } = useContext(GlobaledContext);
 
-  const { inputFormat = 'YYYY-MM-DD' } = muiTextFieldProps
+  const b3Lang = useB3Lang();
+  const activeLang = setDayjsLocale(bcLanguage || 'en');
+
+  const { inputFormat = 'YYYY-MM-DD' } = muiTextFieldProps;
 
   const fieldsProps = {
     type: fieldType,
     name,
-    key: name,
     defaultValue,
     rules: {
       required:
@@ -49,30 +50,25 @@ export default function B3ControlPicker({
       validate: validate && ((v: string) => validate(v, b3Lang)),
     },
     control,
-  }
+  };
 
-  const muixPickerProps = muiTextFieldProps || {}
+  const muixPickerProps = muiTextFieldProps || {};
 
   const handleDatePickerChange = (value: Date) => {
     try {
-      setValue(name, dayjs(value).format(inputFormat))
+      setValue(name, dayjs(value).format(inputFormat));
     } catch (error) {
-      setValue(name, value)
+      setValue(name, value);
     }
-  }
+  };
 
   return ['date'].includes(fieldType) ? (
     <PickerFormControl>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={activeLang}>
         <Controller
+          key={fieldsProps.name}
           {...fieldsProps}
-          render={({
-            field: {
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              ref,
-              ...rest
-            },
-          }) => (
+          render={({ field: { ref, ...rest } }) => (
             <DatePicker
               label={label}
               inputFormat={inputFormat}
@@ -87,9 +83,7 @@ export default function B3ControlPicker({
                   }}
                   value={getValues(name) || defaultValue}
                   error={!!errors[name]}
-                  helperText={
-                    (errors as any)[name] ? (errors as any)[name].message : null
-                  }
+                  helperText={(errors as any)[name] ? (errors as any)[name].message : null}
                 />
               )}
               {...rest}
@@ -99,5 +93,5 @@ export default function B3ControlPicker({
         />
       </LocalizationProvider>
     </PickerFormControl>
-  ) : null
+  ) : null;
 }

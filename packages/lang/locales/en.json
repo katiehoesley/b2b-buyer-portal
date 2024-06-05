@@ -649,7 +649,9 @@
   "login.loginText.invoiceErrorTip": "Please log in to view your invoice",
   "login.loginText.deviceCrowdingLogIn": "The user has logged out, please log in again",
   "login.loginText.password": "Password",
+  "login.loginText.signInHeader": "Sign in",
   "login.registerLogo": "register Logo",
+  "login.loginText.quoteDetailToCheckoutUrl": "Please log in to purchase this quote",
 
   "pdp.notification.productsAdded": "Products were added to your shopping list",
   "pdp.notification.viewShoppingList": "view shopping list",

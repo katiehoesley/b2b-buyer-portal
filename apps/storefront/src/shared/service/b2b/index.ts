@@ -1,13 +1,13 @@
-import validateAddressExtraFields from './api/address'
-import { setChannelStoreType, uploadB2BFile } from './api/global'
-import getBCGraphqlToken from './api/login'
-import getBCOrders from './api/order'
+import validateAddressExtraFields from './api/address';
+import { setChannelStoreType, uploadB2BFile } from './api/global';
+import getBCGraphqlToken from './api/login';
+import getBCOrders from './api/order';
 import {
   createBCCompanyUser,
   sendSubscribersState,
   validateBCCompanyExtraFields,
   validateBCCompanyUserExtraFields,
-} from './api/register'
+} from './api/register';
 import {
   createB2BAddress,
   createBcAddress,
@@ -19,7 +19,7 @@ import {
   getBCCustomerAddress,
   updateB2BAddress,
   updateBcAddress,
-} from './graphql/address'
+} from './graphql/address';
 import {
   getAgentInfo,
   getB2BToken,
@@ -34,7 +34,7 @@ import {
   superAdminBeginMasquerade,
   superAdminCompanies,
   superAdminEndMasquerade,
-} from './graphql/global'
+} from './graphql/global';
 import {
   getB2BAllOrders,
   getB2BOrderDetails,
@@ -43,7 +43,7 @@ import {
   getBcOrderStatusType,
   getOrdersCreatedByUser,
   getOrderStatusType,
-} from './graphql/orders'
+} from './graphql/orders';
 import {
   B2BProductsBulkUploadCSV,
   BcProductsBulkUploadCSV,
@@ -53,7 +53,7 @@ import {
   guestProductsBulkUploadCSV,
   searchB2BProducts,
   searchBcProducts,
-} from './graphql/product'
+} from './graphql/product';
 import {
   b2bQuoteCheckout,
   bcQuoteCheckout,
@@ -67,12 +67,13 @@ import {
   getBCCustomerAddresses,
   getBcQuoteDetail,
   getBCQuotesList,
+  getBCStorefrontProductSettings,
   getQuoteCreatedByUsers,
   quoteDetailAttachFileCreate,
   quoteDetailAttachFileDelete,
   updateB2BQuote,
   updateBCQuote,
-} from './graphql/quote'
+} from './graphql/quote';
 import {
   createB2BCompanyUser,
   getB2BAccountFormFields,
@@ -84,7 +85,7 @@ import {
   getBCForcePasswordReset,
   getBCStoreChannelId,
   storeB2BBasicInfo,
-} from './graphql/register'
+} from './graphql/register';
 import {
   addProductToBcShoppingList,
   addProductToShoppingList,
@@ -106,7 +107,7 @@ import {
   updateB2BShoppingListsItem,
   updateBcShoppingList,
   updateBcShoppingListsItem,
-} from './graphql/shoppingList'
+} from './graphql/shoppingList';
 import {
   addOrUpdateUsers,
   checkUserBCEmail,
@@ -114,14 +115,14 @@ import {
   deleteUsers,
   getUsers,
   getUsersExtraFieldsInfo,
-} from './graphql/users'
+} from './graphql/users';
 
 export {
   getB2BAccountSettings,
   getBCAccountSettings,
   updateB2BAccountSettings,
   updateBCAccountSettings,
-} from './graphql/accountSetting'
+} from './graphql/accountSetting';
 export {
   exportInvoicesAsCSV,
   getInvoiceCheckoutUrl,
@@ -131,8 +132,8 @@ export {
   getInvoicePaymentInfo,
   getInvoiceStats,
   invoiceDownloadPDF,
-} from './graphql/invoice'
-export { getBcOrderedProducts, getOrderedProducts } from './graphql/quickorder'
+} from './graphql/invoice';
+export { getBcOrderedProducts, getOrderedProducts } from './graphql/quickorder';
 
 export {
   addOrUpdateUsers,
@@ -168,6 +169,7 @@ export {
   getB2BAddress,
   getB2BAddressConfig,
   getB2BAddressExtraFields,
+  getBCStorefrontProductSettings,
   getB2BAllOrders,
   getB2BCompanyUserInfo,
   getB2BCountries,
@@ -235,7 +237,7 @@ export {
   validateAddressExtraFields,
   validateBCCompanyExtraFields,
   validateBCCompanyUserExtraFields,
-}
+};
 
-export { default as getProxyInfo } from './api/proxy'
-export { default as getTranslation } from './api/translation'
+export { default as getProxyInfo } from './api/proxy';
+export { default as getTranslation } from './api/translation';

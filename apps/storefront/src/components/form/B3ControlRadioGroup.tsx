@@ -1,5 +1,5 @@
-import { Controller } from 'react-hook-form'
-import { useB3Lang } from '@b3/lang'
+import { Controller } from 'react-hook-form';
+import { useB3Lang } from '@b3/lang';
 import {
   FormControl,
   FormControlLabel,
@@ -7,31 +7,18 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
-} from '@mui/material'
+} from '@mui/material';
 
-import Form from './ui'
+import Form from './ui';
 
-export default function B3ControlRadioGroup({
-  control,
-  errors,
-  ...rest
-}: Form.B3UIProps) {
-  const {
-    fieldType,
-    name,
-    default: defaultValue,
-    required,
-    label,
-    validate,
-    options,
-  } = rest
+export default function B3ControlRadioGroup({ control, errors, ...rest }: Form.B3UIProps) {
+  const { fieldType, name, default: defaultValue, required, label, validate, options } = rest;
 
-  const b3Lang = useB3Lang()
+  const b3Lang = useB3Lang();
 
   const fieldsProps = {
     type: fieldType,
     name,
-    key: name,
     defaultValue,
     rules: {
       required:
@@ -42,7 +29,7 @@ export default function B3ControlRadioGroup({
       validate: validate && ((v: string) => validate(v, b3Lang)),
     },
     control,
-  }
+  };
 
   return ['radio'].includes(fieldType) ? (
     <FormControl>
@@ -52,6 +39,7 @@ export default function B3ControlRadioGroup({
         </FormLabel>
       )}
       <Controller
+        key={fieldsProps.name}
         {...fieldsProps}
         render={({ field }) => (
           <RadioGroup {...field}>
@@ -73,5 +61,5 @@ export default function B3ControlRadioGroup({
         </FormHelperText>
       )}
     </FormControl>
-  ) : null
+  ) : null;
 }

@@ -1,22 +1,11 @@
-import { Controller } from 'react-hook-form'
-import { useB3Lang } from '@b3/lang'
-import {
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  useTheme,
-} from '@mui/material'
+import { Controller } from 'react-hook-form';
+import { useB3Lang } from '@b3/lang';
+import { FormControl, FormHelperText, FormLabel, Radio, RadioGroup, useTheme } from '@mui/material';
 
-import { StyleRectangleFormControlLabel } from './styled'
-import Form from './ui'
+import { StyleRectangleFormControlLabel } from './styled';
+import Form from './ui';
 
-export default function B3ControlRectangle({
-  control,
-  errors,
-  ...rest
-}: Form.B3UIProps) {
+export default function B3ControlRectangle({ control, errors, ...rest }: Form.B3UIProps) {
   const {
     fieldType,
     name,
@@ -26,17 +15,16 @@ export default function B3ControlRectangle({
     validate,
     options,
     labelStyle = {},
-  } = rest
+  } = rest;
 
-  const b3Lang = useB3Lang()
-  const theme = useTheme()
+  const b3Lang = useB3Lang();
+  const theme = useTheme();
 
-  const primaryColor = theme.palette.primary.main
+  const primaryColor = theme.palette.primary.main;
 
   const fieldsProps = {
     type: fieldType,
     name,
-    key: name,
     defaultValue,
     rules: {
       required:
@@ -47,7 +35,7 @@ export default function B3ControlRectangle({
       validate: validate && ((v: string) => validate(v, b3Lang)),
     },
     control,
-  }
+  };
 
   return ['rectangle'].includes(fieldType) ? (
     <FormControl>
@@ -57,6 +45,7 @@ export default function B3ControlRectangle({
         </FormLabel>
       )}
       <Controller
+        key={fieldsProps.name}
         {...fieldsProps}
         render={({ field }) => (
           <RadioGroup
@@ -69,25 +58,20 @@ export default function B3ControlRectangle({
           >
             {options?.length &&
               options.map((option: Form.RadopGroupListProps) => {
-                const isActive =
-                  field.value.toString() === option.value.toString()
+                const isActive = field.value.toString() === option.value.toString();
                 return (
                   <StyleRectangleFormControlLabel
                     value={option.value}
                     label={option.label}
                     key={option.value}
                     sx={{
-                      border: isActive
-                        ? `1px solid ${primaryColor}`
-                        : '1px solid #767676',
-                      boxShadow: isActive
-                        ? `0 0 0 1px ${primaryColor}`
-                        : 'none',
+                      border: isActive ? `1px solid ${primaryColor}` : '1px solid #767676',
+                      boxShadow: isActive ? `0 0 0 1px ${primaryColor}` : 'none',
                       ...labelStyle,
                     }}
                     control={<Radio />}
                   />
-                )
+                );
               })}
           </RadioGroup>
         )}
@@ -98,5 +82,5 @@ export default function B3ControlRectangle({
         </FormHelperText>
       )}
     </FormControl>
-  ) : null
+  ) : null;
 }

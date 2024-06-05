@@ -1,41 +1,37 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useB3Lang } from '@b3/lang'
-import { Alert, Box, ImageListItem } from '@mui/material'
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useB3Lang } from '@b3/lang';
+import { Alert, Box, ImageListItem } from '@mui/material';
 
-import { B3Card } from '@/components'
-import B3Sping from '@/components/spin/B3Sping'
-import { useMobile } from '@/hooks'
-import { CustomStyleContext } from '@/shared/customStyleButtton'
-import { defaultCreateAccountPanel } from '@/shared/customStyleButtton/context/config'
-import { GlobaledContext } from '@/shared/global'
+import { B3Card } from '@/components';
+import B3Sping from '@/components/spin/B3Sping';
+import { useMobile } from '@/hooks';
+import { CustomStyleContext } from '@/shared/customStyleButton';
+import { defaultCreateAccountPanel } from '@/shared/customStyleButton/context/config';
+import { GlobaledContext } from '@/shared/global';
+import { getBCForcePasswordReset, superAdminEndMasquerade } from '@/shared/service/b2b';
+import { b2bLogin, bcLogoutLogin, customerLoginAPI } from '@/shared/service/bc';
+import { deleteCart, getCart } from '@/shared/service/bc/graphql/cart';
 import {
-  getBCForcePasswordReset,
-  superAdminEndMasquerade,
-} from '@/shared/service/b2b'
-import { b2bLogin, bcLogoutLogin, customerLoginAPI } from '@/shared/service/bc'
-import { deleteCart, getCart } from '@/shared/service/bc/graphql/cart'
-import { isLoggedInSelector, useAppDispatch, useAppSelector } from '@/store'
-import { setB2BToken } from '@/store/slices/company'
-import { CustomerRole, UserTypes } from '@/types'
-import { OpenPageState } from '@/types/hooks'
-import { B3SStorage, getCookie, loginjump, snackbar, storeHash } from '@/utils'
-import b2bLogger from '@/utils/b3Logger'
-import { logoutSession } from '@/utils/b3logout'
-import { deleteCartData } from '@/utils/cartUtils'
-import { getCurrentCustomerInfo } from '@/utils/loginInfo'
+  clearMasqueradeCompany,
+  isLoggedInSelector,
+  useAppDispatch,
+  useAppSelector,
+} from '@/store';
+import { setB2BToken } from '@/store/slices/company';
+import { CustomerRole, UserTypes } from '@/types';
+import { OpenPageState } from '@/types/hooks';
+import { channelId, loginjump, snackbar, storeHash } from '@/utils';
+import b2bLogger from '@/utils/b3Logger';
+import { logoutSession } from '@/utils/b3logout';
+import { deleteCartData } from '@/utils/cartUtils';
+import { getCurrentCustomerInfo } from '@/utils/loginInfo';
 
-import LoginWidget from './component/LoginWidget'
-import { loginCheckout, LoginConfig, LoginInfoInit } from './config'
-import LoginForm from './LoginForm'
-import LoginPanel from './LoginPanel'
-import { LoginContainer, LoginImage } from './styled'
+import LoginWidget from './component/LoginWidget';
+import { loginCheckout, LoginConfig, LoginInfoInit } from './config';
+import LoginForm from './LoginForm';
+import LoginPanel from './LoginPanel';
+import { LoginContainer, LoginImage } from './styled';
 
 const initialLoginInfo = {
   loginTitle: 'Sign In',
@@ -50,44 +46,43 @@ const initialLoginInfo = {
   widgetBodyText: '',
   widgetFooterText: '',
   displayStoreLogo: false,
-}
+};
 interface RegisteredProps {
-  setOpenPage: Dispatch<SetStateAction<OpenPageState>>
+  setOpenPage: Dispatch<SetStateAction<OpenPageState>>;
 }
 
-type AlertColor = 'success' | 'info' | 'warning' | 'error'
+type AlertColor = 'success' | 'info' | 'warning' | 'error';
 
 export default function Login(props: RegisteredProps) {
-  const { setOpenPage } = props
-  const storeDispatch = useAppDispatch()
+  const { setOpenPage } = props;
+  const storeDispatch = useAppDispatch();
 
-  const isLoggedIn = useAppSelector(isLoggedInSelector)
-  const b2bId = useAppSelector(({ company }) => company.customer.b2bId)
-  const platform = useAppSelector(({ global }) => global.storeInfo.platform)
-  const salesRepCompanyId = useAppSelector(
-    ({ b2bFeatures }) => b2bFeatures.masqueradeCompany.id
-  )
-  const isAgenting = useAppSelector(
-    ({ b2bFeatures }) => b2bFeatures.masqueradeCompany.isAgenting
-  )
+  const isLoggedIn = useAppSelector(isLoggedInSelector);
+  const b2bId = useAppSelector(({ company }) => company.customer.b2bId);
+  const salesRepCompanyId = useAppSelector(({ b2bFeatures }) => b2bFeatures.masqueradeCompany.id);
+  const isAgenting = useAppSelector(({ b2bFeatures }) => b2bFeatures.masqueradeCompany.isAgenting);
 
-  const [isLoading, setLoading] = useState(true)
-  const [isMobile] = useMobile()
+  const quoteDetailToCheckoutUrl = useAppSelector(
+    ({ quoteInfo }) => quoteInfo.quoteDetailToCheckoutUrl,
+  );
 
-  const [showTipInfo, setShowTipInfo] = useState<boolean>(true)
-  const [flag, setLoginFlag] = useState<string>('')
-  const [loginInfo, setLoginInfo] = useState<LoginInfoInit | null>(null)
+  const [isLoading, setLoading] = useState(true);
+  const [isMobile] = useMobile();
+
+  const [showTipInfo, setShowTipInfo] = useState<boolean>(true);
+  const [flag, setLoginFlag] = useState<string>('');
+  const [loginInfo, setLoginInfo] = useState<LoginInfoInit | null>(null);
   const [loginAccount, setLoginAccount] = useState<LoginConfig>({
     emailAddress: '',
     password: '',
-  })
-  const navigate = useNavigate()
-  const b3Lang = useB3Lang()
-  const [searchParams, setSearchParams] = useSearchParams()
+  });
+  const navigate = useNavigate();
+  const b3Lang = useB3Lang();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const {
     state: { isCheckout, logo, registerEnabled },
-  } = useContext(GlobaledContext)
+  } = useContext(GlobaledContext);
 
   const {
     state: {
@@ -96,17 +91,13 @@ export default function Login(props: RegisteredProps) {
       loginPageHtml,
       portalStyle: { backgroundColor = 'FEF9F5' },
     },
-  } = useContext(CustomStyleContext)
+  } = useContext(CustomStyleContext);
 
   useEffect(() => {
     const init = async () => {
       try {
-        const {
-          createAccountButtonText,
-          primaryButtonColor,
-          signInButtonText,
-        } = loginPageButton
-        const { displayStoreLogo, pageTitle } = loginPageDisplay
+        const { createAccountButtonText, primaryButtonColor, signInButtonText } = loginPageButton;
+        const { displayStoreLogo, pageTitle } = loginPageDisplay;
 
         const {
           bottomHtmlRegionEnabled,
@@ -114,13 +105,12 @@ export default function Login(props: RegisteredProps) {
           createAccountPanelHtml,
           topHtmlRegionEnabled,
           topHtmlRegionHtml,
-        } = loginPageHtml
+        } = loginPageHtml;
 
         const Info = {
           loginTitle: pageTitle || b3Lang('login.button.signIn'),
           loginBtn: signInButtonText || b3Lang('login.button.signInUppercase'),
-          CreateAccountButtonText:
-            createAccountButtonText || b3Lang('login.button.createAccount'),
+          CreateAccountButtonText: createAccountButtonText || b3Lang('login.button.createAccount'),
           btnColor: primaryButtonColor || '',
           isShowWidgetHead: topHtmlRegionEnabled || false,
           widgetHeadText: topHtmlRegionHtml || '',
@@ -128,213 +118,209 @@ export default function Login(props: RegisteredProps) {
           isShowWidgetFooter: bottomHtmlRegionEnabled || false,
           widgetFooterText: bottomHtmlRegionHtml || '',
           displayStoreLogo: displayStoreLogo || false,
-        }
+        };
 
-        const loginFlag = searchParams.get('loginFlag')
-        const showTipInfo = searchParams.get('showTip') !== 'false'
+        const loginFlag = searchParams.get('loginFlag');
+        const showTipInfo = searchParams.get('showTip') !== 'false';
 
-        setShowTipInfo(showTipInfo)
+        setShowTipInfo(showTipInfo);
 
-        if (loginFlag) setLoginFlag(loginFlag)
+        if (loginFlag) setLoginFlag(loginFlag);
 
         if (loginFlag === '7') {
-          snackbar.error(b3Lang('login.loginText.invoiceErrorTip'))
+          snackbar.error(b3Lang('login.loginText.invoiceErrorTip'));
         }
         if (loginFlag === '3' && isLoggedIn) {
-          const cartEntityId: string = getCookie('cartId')
+          const cartInfo = await getCart();
 
-          const cartInfo = cartEntityId
-            ? await getCart(cartEntityId, platform)
-            : null
-
-          if (cartInfo) {
-            let newCartId = cartEntityId
-            if (cartInfo?.data && cartInfo?.data?.site) {
-              const { cart } = cartInfo.data.site
-              newCartId = cart?.entityId || cartEntityId
-            }
-            const deleteQuery = deleteCartData(newCartId)
-            await deleteCart(deleteQuery)
+          if (cartInfo.data.site.cart?.entityId) {
+            const deleteQuery = deleteCartData(cartInfo.data.site.cart.entityId);
+            await deleteCart(deleteQuery);
           }
 
-          const { result } = (await bcLogoutLogin()).data.logout
+          const { result } = (await bcLogoutLogin()).data.logout;
 
-          if (result !== 'success') return
+          if (result !== 'success') return;
 
           if (isAgenting && typeof b2bId === 'number') {
-            await superAdminEndMasquerade(+salesRepCompanyId, b2bId)
+            await superAdminEndMasquerade(+salesRepCompanyId, b2bId);
+            storeDispatch(clearMasqueradeCompany());
           }
 
           // SUP-1282 Clear sessionStorage to allow visitors to display the checkout page
-          window.sessionStorage.clear()
+          window.sessionStorage.clear();
 
-          logoutSession()
-          setLoading(false)
-          window.location.reload()
-          return
+          logoutSession();
+          setLoading(false);
+          window.location.reload();
+          return;
         }
 
-        setLoginInfo(Info)
-        setLoading(false)
+        setLoginInfo(Info);
+        setLoading(false);
       } catch (e) {
-        setLoginInfo(initialLoginInfo)
+        setLoginInfo(initialLoginInfo);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    init()
+    init();
     // disabling as we only need to run this on the first render and its causing infinite loops when loging in
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   const tipInfo = (loginFlag: string, email = '') => {
-    let str = ''
+    let str = '';
     if (loginFlag) {
       switch (loginFlag) {
         case '1':
           str = b3Lang('login.loginTipInfo.resetPassword', {
             email,
-          })
-          break
+          });
+          break;
         case '2':
-          str = b3Lang('login.loginTipInfo.receivePassword')
-          break
+          str = b3Lang('login.loginTipInfo.receivePassword');
+          break;
         case '3':
-          str = b3Lang('login.loginTipInfo.loggedOutLogin')
-          break
+          str = b3Lang('login.loginTipInfo.loggedOutLogin');
+          break;
         case '4':
-          str = b3Lang('login.loginTipInfo.accountincorrect')
-          break
+          str = b3Lang('login.loginTipInfo.accountincorrect');
+          break;
         case '5':
-          str = b3Lang('login.loginTipInfo.accountPrelaunch')
-          break
+          str = b3Lang('login.loginTipInfo.accountPrelaunch');
+          break;
         case '6':
-          str = b3Lang('login.loginText.deviceCrowdingLogIn')
-          break
+          str = b3Lang('login.loginText.deviceCrowdingLogIn');
+          break;
         default:
-          str = ''
+          str = '';
       }
     }
-    return str
-  }
+    return str;
+  };
 
   const setTipType = (flag: string): AlertColor | undefined => {
-    if (!flag) return undefined
-    let tipType: AlertColor = 'success'
+    if (!flag) return undefined;
+    let tipType: AlertColor = 'success';
     switch (flag) {
       case '1':
-        tipType = 'error'
-        break
+        tipType = 'error';
+        break;
       case '4':
-        tipType = 'error'
-        break
+        tipType = 'error';
+        break;
       case '5':
-        tipType = 'warning'
-        break
+        tipType = 'warning';
+        break;
       default:
-        tipType = 'success'
+        tipType = 'success';
     }
-    return tipType
-  }
+    return tipType;
+  };
 
   const getforcePasswordReset = async (email: string) => {
     const {
       companyUserInfo: {
         userInfo: { forcePasswordReset },
       },
-    } = await getBCForcePasswordReset(email)
+    } = await getBCForcePasswordReset(email);
 
     if (forcePasswordReset) {
-      setLoginFlag('1')
+      setLoginFlag('1');
     } else {
-      setLoginFlag('4')
+      setLoginFlag('4');
     }
-  }
+  };
 
   const handleLoginSubmit = async (data: LoginConfig) => {
-    setLoading(true)
-    setLoginAccount(data)
+    setLoading(true);
+    setLoginAccount(data);
     setSearchParams((prevURLSearchParams) => {
-      prevURLSearchParams.delete('loginFlag')
-      return prevURLSearchParams
-    })
+      prevURLSearchParams.delete('loginFlag');
+      return prevURLSearchParams;
+    });
 
     if (isCheckout) {
       try {
-        await loginCheckout(data)
-        window.location.reload()
+        await loginCheckout(data);
+        window.location.reload();
       } catch (error) {
-        b2bLogger.error(error)
-        getforcePasswordReset(data.emailAddress)
+        b2bLogger.error(error);
+        getforcePasswordReset(data.emailAddress);
       }
     } else {
       try {
         const loginData = {
           email: data.emailAddress,
           password: data.password,
-          storeHash: storeHash as string,
-          channelId: B3SStorage.get('B3channelId'),
-        }
+          storeHash,
+          channelId,
+        };
         const {
           login: {
             result: { token, storefrontLoginToken },
             errors,
           },
-        } = await b2bLogin({ loginData })
+        } = await b2bLogin({ loginData });
 
-        storeDispatch(setB2BToken(token))
-        customerLoginAPI(storefrontLoginToken)
+        storeDispatch(setB2BToken(token));
+        customerLoginAPI(storefrontLoginToken);
 
-        if (errors?.length || !token) {
-          if (errors?.length) {
-            const { message } = errors[0]
-            if (
-              message ===
-              'Operation cannot be performed as the storefront channel is not live'
-            ) {
-              setLoginFlag('5')
-              setLoading(false)
-              return
+        if (errors?.[0] || !token) {
+          if (errors?.[0]) {
+            const { message } = errors[0];
+            if (message === 'Operation cannot be performed as the storefront channel is not live') {
+              setLoginFlag('5');
+              setLoading(false);
+              return;
             }
           }
-          getforcePasswordReset(data.emailAddress)
+          getforcePasswordReset(data.emailAddress);
         } else {
-          const info = await getCurrentCustomerInfo(token)
+          const info = await getCurrentCustomerInfo(token);
+
+          if (quoteDetailToCheckoutUrl) {
+            navigate(quoteDetailToCheckoutUrl);
+            return;
+          }
 
           if (
             info?.userType === UserTypes.MULTIPLE_B2C &&
-            info?.role === CustomerRole.JUNIOR_BUYER
+            info?.role === CustomerRole.SUPER_ADMIN
           ) {
-            navigate('/dashboard')
-            return
+            navigate('/dashboard');
+            return;
           }
-          const isLoginLandLocation = loginjump(navigate)
+          const isLoginLandLocation = loginjump(navigate);
 
-          if (!isLoginLandLocation) return
+          if (!isLoginLandLocation) return;
 
           if (info?.role === CustomerRole.JUNIOR_BUYER) {
-            navigate('/shoppingLists')
+            navigate('/shoppingLists');
           } else {
-            navigate('/orders')
+            navigate('/orders');
           }
         }
       } catch (error) {
-        snackbar.error(b3Lang('login.loginTipInfo.accountincorrect'))
+        snackbar.error(b3Lang('login.loginTipInfo.accountincorrect'));
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-  }
+  };
 
   const handleCreateAccountSubmit = () => {
-    navigate('/register')
-  }
+    navigate('/register');
+  };
 
   const gotoForgotPassword = () => {
-    navigate('/forgotpassword')
-  }
+    navigate('/forgotpassword');
+  };
 
-  const loginAndRegisterContainerWidth = registerEnabled ? '100%' : '50%'
-  const loginContainerWidth = registerEnabled ? '50%' : 'auto'
+  const loginAndRegisterContainerWidth = registerEnabled ? '100%' : '50%';
+  const loginContainerWidth = registerEnabled ? '50%' : 'auto';
 
   return (
     <B3Card setOpenPage={setOpenPage}>
@@ -369,6 +355,11 @@ export default function Login(props: RegisteredProps) {
                     )}
                   </Box>
                 )}
+                {quoteDetailToCheckoutUrl && (
+                  <Alert severity="error" variant="filled">
+                    {b3Lang('login.loginText.quoteDetailToCheckoutUrl')}
+                  </Alert>
+                )}
                 {logo && loginInfo?.displayStoreLogo && (
                   <Box sx={{ margin: '20px 0', minHeight: '150px' }}>
                     <LoginImage>
@@ -377,14 +368,10 @@ export default function Login(props: RegisteredProps) {
                           maxWidth: isMobile ? '70%' : '250px',
                         }}
                         onClick={() => {
-                          window.location.href = '/'
+                          window.location.href = '/';
                         }}
                       >
-                        <img
-                          src={`${logo}`}
-                          alt={b3Lang('login.registerLogo')}
-                          loading="lazy"
-                        />
+                        <img src={`${logo}`} alt={b3Lang('login.registerLogo')} loading="lazy" />
                       </ImageListItem>
                     </LoginImage>
                   </Box>
@@ -476,5 +463,5 @@ export default function Login(props: RegisteredProps) {
         </B3Sping>
       </LoginContainer>
     </B3Card>
-  )
+  );
 }

@@ -107,8 +107,6 @@ For assistance with activating the remote buyer portal or to inquire about multi
 4. Copy environment variables: `cp apps/storefront/.env-example apps/storefront/.env`.
 5. Update the following values in `.env`:
 
-- `VITE_CHANNEL_ID`: The ID of the channel to use for the storefront.
-- `VITE_STORE_HASH`: The hash of the store to use for the storefront.
 - `VITE_ASSETS_ABSOLUTE_PATH`: For deployment, set this to the absolute path of the hosted compiled assets.
 
 Environment variables have been updated so you can run your UI directly into production storefronts.
@@ -121,7 +119,7 @@ Environment variables have been updated so you can run your UI directly into pro
 2. Configure header and footer scripts:
 
 - Navigate to Channels Manager -> Scripts.
-- Add two scripts (e.g., B2BEdition-header, B2BEdition-footer). Ensure you set the correct port for your localhost in the script URLs.
+- Add two scripts (e.g., B2BEdition-header, B2BEdition-footer). Ensure you set the correct port for your localhost in the script URLs. In the "Location" section make sure you check on "All pages".
 - Edit the header script:
 
 ```html
@@ -134,9 +132,6 @@ Environment variables have been updated so you can run your UI directly into pro
   document.head.appendChild(b2bHideBodyStyle);
   {{/contains}}
   {{/if}}
-
-  // preload the vite server for local development
-  fetch("http://localhost:3001/");
 </script>
 <script type="module">
   import RefreshRuntime from 'http://localhost:3001/@react-refresh'
@@ -146,25 +141,30 @@ Environment variables have been updated so you can run your UI directly into pro
   window.__vite_plugin_react_preamble_installed__ = true
 </script>
 <script type="module" src="http://localhost:3001/@vite/client"></script>
-<script
-  type="module"
-  src="http://localhost:3001/index.html?html-proxy&index=0.js"
-></script>
 ```
 
 - Edit the footer script:
 
 ```html
 <script type="module" src="http://localhost:3001/src/main.ts"></script>
+<script>
+  window.B3 = {
+    setting: {
+      store_hash: '{{settings.store_hash}}',
+      channel_id: 1, // this will vary depending on your store channel id
+      platform: 'bigcommerce',
+    },
+  }
+</script>
 ```
 
-3. Verify correct values in the .env file, especially the client_id for the draft app.
+1. Verify correct values in the .env file, for internal devs, specially the value `VITE_B2B_CLIENT_ID` for the draft application you created for the BC App Marketplace.
 
-4. For local debugging, set VITE_LOCAL_DEBUG to false in .env.
+2. For local debugging, set VITE_LOCAL_DEBUG to false in .env.
 
-5. Visit the storefront and attempt to sign in.
+3. Visit the storefront and attempt to sign in.
 
-6. For cross-origin issues, update URL variables in .env to use the tunnel URL with HTTPS.
+4. For cross-origin issues, update URL variables in .env to use the tunnel URL with HTTPS.
 
 Note: If linters aren't functional, run `yarn prepare` first.
 
@@ -187,6 +187,7 @@ Once you have uploaded the contents of the `dist` folder to your hosting provide
     setting: {
       store_hash: '<YOUR_STORE_HASH>',
       channel_id: '<YOUR_CHANNEL_ID>',
+      platform: '<YOUR_STORE_PLATFORM>',
       b2b_url: 'https://api-b2b.bigcommerce.com',
       captcha_setkey: '6LdGN_sgAAAAAGYFg1lmVoakQ8QXxbhWqZ1GpYaJ',
     },

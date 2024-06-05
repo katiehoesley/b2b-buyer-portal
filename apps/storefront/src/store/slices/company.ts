@@ -1,25 +1,20 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import persistReducer from 'redux-persist/es/persistReducer'
-import storage from 'redux-persist/lib/storage'
+/* eslint-disable @typescript-eslint/naming-convention */
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import persistReducer from 'redux-persist/es/persistReducer';
+import storageSession from 'redux-persist/lib/storage/session';
 
-import {
-  CompanyInfo,
-  CompanyStatus,
-  Customer,
-  CustomerRole,
-  LoginTypes,
-  UserTypes,
-} from '@/types'
+import { CompanyInfo, CompanyStatus, Customer, CustomerRole, LoginTypes, UserTypes } from '@/types';
 
 interface Tokens {
-  B2BToken: string
-  bcGraphqlToken: string
-  currentCustomerJWT: string
+  B2BToken: string;
+  bcGraphqlToken: string;
+  currentCustomerJWT: string;
 }
+
 export interface CompanyState {
-  companyInfo: CompanyInfo
-  customer: Customer
-  tokens: Tokens
+  companyInfo: CompanyInfo;
+  customer: Customer;
+  tokens: Tokens;
 }
 
 const initialState: CompanyState = {
@@ -44,7 +39,7 @@ const initialState: CompanyState = {
     bcGraphqlToken: '',
     currentCustomerJWT: '',
   },
-}
+};
 
 const companySlice = createSlice({
   name: 'company',
@@ -52,37 +47,37 @@ const companySlice = createSlice({
   reducers: {
     clearCompanySlice: () => initialState,
     clearCompanyInfo: (state) => {
-      state.companyInfo = initialState.companyInfo
+      state.companyInfo = initialState.companyInfo;
     },
     clearCustomer: (state) => {
-      state.customer = initialState.customer
+      state.customer = initialState.customer;
     },
     setCompanyInfo: (state, { payload }: PayloadAction<CompanyInfo>) => {
-      state.companyInfo = payload
+      state.companyInfo = payload;
     },
     setCustomerInfo: (state, { payload }: PayloadAction<Customer>) => {
-      state.customer = payload
+      state.customer = payload;
     },
     setCompanyStatus: (state, { payload }: PayloadAction<CompanyStatus>) => {
-      state.companyInfo.status = payload
+      state.companyInfo.status = payload;
     },
     setTokens: (state, { payload }: PayloadAction<Tokens>) => {
-      state.tokens = payload
+      state.tokens = payload;
     },
     setB2BToken: (state, { payload }: PayloadAction<string>) => {
-      state.tokens.B2BToken = payload
+      state.tokens.B2BToken = payload;
     },
     setbcGraphqlToken: (state, { payload }: PayloadAction<string>) => {
-      state.tokens.bcGraphqlToken = payload
+      state.tokens.bcGraphqlToken = payload;
     },
     setCurrentCustomerJWT: (state, { payload }: PayloadAction<string>) => {
-      state.tokens.currentCustomerJWT = payload
+      state.tokens.currentCustomerJWT = payload;
     },
     setLoginType: (state, { payload }: PayloadAction<LoginTypes>) => {
-      state.customer.loginType = payload
+      state.customer.loginType = payload;
     },
   },
-})
+});
 
 export const {
   clearCompanySlice,
@@ -96,6 +91,6 @@ export const {
   setbcGraphqlToken,
   setCurrentCustomerJWT,
   setLoginType,
-} = companySlice.actions
+} = companySlice.actions;
 
-export default persistReducer({ key: 'company', storage }, companySlice.reducer)
+export default persistReducer({ key: 'company', storage: storageSession }, companySlice.reducer);
